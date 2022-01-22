@@ -62,21 +62,22 @@ def transform(sample,crop_size):
     return trans(sample)
 
 class dataset(Dataset):
-    def __init__(self, list_file_images,crop_size, root='', mode='train'):
+    def __init__(self, list_file_images,crop_size, root_img='',root_label='', mode='train'):
         self.lines = []
+        self.lines_label=[]
         self.paths_images=[]
         self.paths_labels=[]
         self.mode = mode
         self.crop_size=crop_size
         with open(list_file_images, encoding='utf-8-sig') as f:
             for line in f:
-                path_image = os.path.join(root, 'image_2')
-                path_image = os.path.join(path_image, line)
-                path_label = os.path.join(root, 'semantic')
-                path_label = os.path.join(path_label, line)
+                path_image = os.path.join(root_train, line)
+                line_label=line[0:-4]+'_segmentation'+'.png'
+                path_label = os.path.join(root_label, line_label)
                 self.paths_images.append(path_image)
                 self.paths_labels.append(path_label)
                 self.lines.append(line)
+                self.lines_labels.append(line_label)
 
     def __getitem__(self, item):
         path_image = self.paths_images[item]
