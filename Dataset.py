@@ -56,7 +56,7 @@ class Random_Crop(object):
 def transform(sample,crop_size):
     trans = transforms.Compose([
         Random_Crop(crop_size),
-        z_normalization(),
+        Normalization(),
         ToTensor()
     ])
     return trans(sample)
