@@ -5,6 +5,7 @@ import pickle
 import random
 from torchvision.transforms import transforms
 from torch.utils.data import Dataset
+from scipy import sparse
 
 
 class z_normalization(object):
@@ -53,16 +54,16 @@ class Random_Crop(object):
 
         return {'image': image, 'label': label}
 
-def transform(sample,crop_size):
+def transform(sample, crop_size, img_size):
     trans = transforms.Compose([
-        Random_Crop(crop_size),
+        Random_Crop(crop_size, img_size),
         Normalization(),
         ToTensor()
     ])
     return trans(sample)
 
 class dataset(Dataset):
-    def __init__(self, list_file_images,crop_size, root_img='',root_label='', mode='train'):
+    def __init__(self, list_file_images, crop_size, root_img='', root_label='', mode='train'):
         self.lines = []
         self.lines_label=[]
         self.paths_images=[]
@@ -71,13 +72,13 @@ class dataset(Dataset):
         self.crop_size=crop_size
         with open(list_file_images, encoding='utf-8-sig') as f:
             for line in f:
-                path_image = os.path.join(root_train, line)
-                line_label=line[0:-4]+'_segmentation'+'.png'
+                path_image = os.path.join(root_img, line)
+                line_label=line[0:-5]+'_segmentation'+'.png'
                 path_label = os.path.join(root_label, line_label)
                 self.paths_images.append(path_image)
                 self.paths_labels.append(path_label)
                 self.lines.append(line)
-                self.lines_labels.append(line_label)
+                self.lines_label.append(line_label)
 
     def __getitem__(self, item):
         path_image = self.paths_images[item]
@@ -88,8 +89,8 @@ class dataset(Dataset):
         image=cv2.imread(path_image)
         label=cv2.imread(path_label,0)
         sample={'image':image,'label':label}
-        sample=transform(sample,self.crop_size,image.shape)
-        return sample['image'],sample['label']
+        sample=transform(sample,self.crop_size, image.shape)
+        return sample['image'], sample['label']
 
 
     def __len__(self):
