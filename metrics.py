@@ -11,13 +11,13 @@ def iou(output,target,eps=1e-5,threshold=0.5,use_sigmoid='True'):
     output_0=(output_0>threshold).float()
     output_1=(output_1>threshold).float()
     
-    intersection_0=((output_0*target_0).sum())+eps
-    union_0=(output_0.sum()+target_0.sum()-intersection_0)+eps
+    intersection_0=((output_0*target_0).sum())
+    union_0=(output_0.sum()+target_0.sum()-intersection_0)
 
-    intersection_255=((output_1*target_255).sum())+eps
-    union_255=(output_1.sum()+target_255.sum()-intersection_255)+eps
-    
-    score_0=intersection_0/union_0
-    score_255=intersection_255/union_255
+    intersection_255=((output_1*target_255).sum())
+    union_255=(output_1.sum()+target_255.sum()-intersection_255)
+
+    score_0=((intersection_0+eps)/(union_0+eps))
+    score_255=((intersection_255+eps)/(union_255+eps))
     
     return (score_0+score_255)/2.
