@@ -1,4 +1,4 @@
-def iou(output,target,eps=1e-5,threshold=0.5,use_sigmoid='True'):
+def iou(output,target,eps=1e-5,threshold=0.5,use_sigmoid=False):
     target_0=(target==0).float()
     target_255=(target==255).float()
     if use_sigmoid:
