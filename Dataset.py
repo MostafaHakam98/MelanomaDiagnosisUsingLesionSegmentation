@@ -1,5 +1,10 @@
 import torch
 import cv2
+import os
+import random
+import numpy as np
+
+from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 
 
@@ -57,14 +62,15 @@ class Scaling(object):
     def __call__(self, sample):
         image = sample['image']
         label = sample['label']
-        image = cv2.resize(image, scale_size)
-        label = cv2.resize(label, scale_size)
+        image = cv2.resize(image, self.scale_size)
+        label = cv2.resize(label, self.scale_size)
         return {'image':image, 'label':label}
 
 def transform(sample, scale_size, crop_size):
     trans = transforms.Compose([
         Scaling(scale_size),
         Random_Crop(crop_size, scale_size),
+        Scaling(scale_size),
         Normalization(),
         ToTensor()
     ])
