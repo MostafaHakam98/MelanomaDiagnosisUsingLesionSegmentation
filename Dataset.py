@@ -31,7 +31,7 @@ class Normalization(object):
         return {'image':image, 'label':label}
 
 class Random_Crop(object):
-    def __init__(self, crop_size, img_size):
+    def __init__(self, img_size, crop_size):
         self.crop_size = crop_size
         self.img_size = img_size
 
@@ -41,7 +41,7 @@ class Random_Crop(object):
 
         h = self.crop_size[0]
         w = self.crop_size[1]
-    
+        
         H = random.randint(0, self.img_size[0] - h)
         W = random.randint(0, self.img_size[1] - w)
 
@@ -61,10 +61,10 @@ class Scaling(object):
         label = cv2.resize(label, scale_size)
         return {'image':image, 'label':label}
 
-def transform(sample, scale_size, crop_size, img_size):
+def transform(sample, scale_size, crop_size):
     trans = transforms.Compose([
         Scaling(scale_size),
-        Random_Crop(crop_size, img_size),
+        Random_Crop(crop_size, scale_size),
         Normalization(),
         ToTensor()
     ])
@@ -96,9 +96,10 @@ class dataset(Dataset):
         path_label = path_label.rstrip("\n")
         
         image = cv2.imread(path_image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         label = cv2.imread(path_label,0)
         sample = {'image':image,'label':label}
-        sample = transform(sample, self.crop_size, self.scale_size, image.shape)
+        sample = transform(sample, self.crop_size, self.scale_size)
         return sample['image'], sample['label']
 
     def __len__(self):
