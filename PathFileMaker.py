@@ -1,3 +1,5 @@
+import os
+
 class fileMaker:
 
     def __init__(self, textfile_train="", textfile_valid="", path_images_train="", path_images_valid=""):
