@@ -36,7 +36,7 @@ class Normalization(object):
         return {'image':image, 'label':label}
 
 class Random_Crop(object):
-    def __init__(self, img_size, crop_size):
+    def __init__(self, crop_size, img_size):
         self.crop_size = crop_size
         self.img_size = img_size
 
@@ -66,11 +66,11 @@ class Scaling(object):
         label = cv2.resize(label, self.scale_size)
         return {'image':image, 'label':label}
 
-def transform(sample, scale_size, crop_size):
+def transform(sample, crop_size, scale_size):
     trans = transforms.Compose([
         Scaling(scale_size),
         Random_Crop(crop_size, scale_size),
-        Scaling(scale_size),
+        # Scaling(scale_size),
         Normalization(),
         ToTensor()
     ])
