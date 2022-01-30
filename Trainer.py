@@ -276,7 +276,7 @@ class Trainer:
             print(message)
 
     @staticmethod
-    def _foreach_batch(device_info,dl: DataLoader,
+    def _foreach_batch(self,device_info,dl: DataLoader,
                        forward_fn: Callable[[Any], BatchResult],
                        verbose=True, max_batches=None) -> EpochResult:
         """
