@@ -97,6 +97,7 @@ class Trainer:
         self.lr = learning_rate
         self.objective_metric = objective_metric
         self.device = device
+        self.epoch=0
         self.callbacks=callbacks
         if self.device:
             model.to(self.device)
@@ -129,6 +130,7 @@ class Trainer:
         epochs_without_improvement = 0
 
         for epoch in range(current_epoch,num_epochs):
+            self.epoch=epoch
             if empty_cache:
               torch.cuda.empty_cache()
 
@@ -305,7 +307,8 @@ class Trainer:
             for batch_idx in range(num_batches):
                 counter += 1
                 data = next(dl_iter)
-                batch_res = forward_fn(batch_idx, data)
+                curr_idx=(self.epoch*len(dl))+batch_idx
+                batch_res = forward_fn(curr_idx, data)
 
                 if batch_res.loss > max_loss:
                     max_loss = batch_res.loss
