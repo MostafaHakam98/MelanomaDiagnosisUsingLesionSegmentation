@@ -193,7 +193,7 @@ class Trainer:
         :return: An EpochResult for the epoch.
         """
         self.model.train()  
-        return self._foreach_batch(self.device_info,dl_train, self.train_batch, **kw)
+        return self._foreach_batch(self.device_info,dl_train, self.train_batch,self.epoch, **kw)
 
     def test_epoch(self, dl_test: DataLoader, **kw) -> EpochResult:
         """
@@ -203,7 +203,7 @@ class Trainer:
         :return: An EpochResult for the epoch.
         """
         self.model.eval()  # set evaluation (test) mode
-        return self._foreach_batch(self.device_info,dl_test, self.test_batch, **kw)
+        return self._foreach_batch(self.device_info,dl_test, self.test_batch,self.epoch, **kw)
 
     def train_batch(self, index, batch_data) -> BatchResult:
         """
@@ -276,9 +276,9 @@ class Trainer:
             print(message)
 
     @staticmethod
-    def _foreach_batch(self,device_info,dl: DataLoader,
-                       forward_fn: Callable[[Any], BatchResult],
-                       verbose=True, max_batches=None) -> EpochResult:
+    def _foreach_batch(device_info,dl: DataLoader,
+                       forward_fn: Callable[[Any], BatchResult],epoch,
+                       verbose=True, max_batches=None,) -> EpochResult:
         """
         Evaluates the given forward-function on batches from the given
         dataloader, and prints progress along the way.
@@ -307,7 +307,7 @@ class Trainer:
             for batch_idx in range(num_batches):
                 counter += 1
                 data = next(dl_iter)
-                curr_idx=(self.epoch*len(dl))+batch_idx
+                curr_idx=(epoch*len(dl))+batch_idx
                 batch_res = forward_fn(curr_idx, data)
 
                 if batch_res.loss > max_loss:
