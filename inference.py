@@ -16,7 +16,7 @@ class Inference():
     image_tensor = torch.from_numpy(np.ascontiguousarray(image_resize.transpose(2, 0, 1))).float()
     image_tensor = torch.unsqueeze(image_tensor,0)
     image_tensor = image_tensor.to(self.device)
-    output = model(image_tensor)
+    output = self.model(image_tensor)
     prediction = output[0].cpu().detach().numpy()
     if prediction.shape[0] == 2:
       prediction = np.argmax(prediction, axis=0)
