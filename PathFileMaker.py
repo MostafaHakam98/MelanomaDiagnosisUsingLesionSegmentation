@@ -18,10 +18,11 @@ class fileMaker:
                 if str(f)[-4:] == ".jpg":
                     a.write(str(f) + os.linesep)
 
-        b = open(self.textfile_valid, "w")
+        if self.textfile_valid:
+            b = open(self.textfile_valid, "w")
 
-        for path, subdirs, files in os.walk(self.path_images_valid):
-            for file in files:
-                f = os.path.join(file)
-                if str(f)[-4:] == ".jpg":
-                    b.write(str(f) + os.linesep)
+            for path, subdirs, files in os.walk(self.path_images_valid):
+                for file in files:
+                    f = os.path.join(file)
+                    if str(f)[-4:] == ".jpg":
+                        b.write(str(f) + os.linesep)
