@@ -1,9 +1,10 @@
 import tqdm
-
+import torch
 
 class test:
-    def __init__(self, model, loss_fn, objective_metric):
+    def __init__(self, model, loss_fn, objective_metric, device):
         self.sum = 0
+        self.device = device
         self.model = model
         self.loss_fn = loss_fn
         self.objective_metric = objective_metric
@@ -14,10 +15,10 @@ class test:
             label = test_set[i][1]
 
             image_tensor = torch.unsqueeze(img, 0)
-            image_tensor = image_tensor.to(device)
+            image_tensor = image_tensor.to(self.device)
 
             label_tensor = torch.unsqueeze(label, 0)
-            label_tensor = label_tensor.to(device)
+            label_tensor = label_tensor.to(self.device)
 
             pred = self.model(image_tensor)
             loss = self.loss_fn(pred, label_tensor)
