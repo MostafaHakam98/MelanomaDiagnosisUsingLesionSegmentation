@@ -26,4 +26,4 @@ class test:
 
             self.sum += float(score.item())
 
-        return sum / len(test_set)
+        return self.sum / len(test_set)
