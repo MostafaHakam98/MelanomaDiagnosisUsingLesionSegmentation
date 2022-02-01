@@ -106,6 +106,14 @@ def transform(sample, crop_size, scale_size):
     return trans(sample)
 
 
+def transform_valid(sample, crop_size):
+    trans = transforms.Compose([
+        Scaling(crop_size),
+        Normalization(),
+        ToTensor()
+    ])
+    return trans(sample)
+
 class dataset(Dataset):
     def __init__(self, list_file_images, scale_size=(1000, 1000), crop_size=(900, 900), root_img='', root_label='',
                  mode='train'):
@@ -136,7 +144,10 @@ class dataset(Dataset):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         label = cv2.imread(path_label, 0)
         sample = {'image': image, 'label': label}
-        sample = transform(sample, self.crop_size, self.scale_size)
+        if self.mode == 'train':
+            sample = transform(sample, self.crop_size, self.scale_size)
+        else:
+            sample = transform_valid(sample, self.scale_size)
         return sample['image'], sample['label']
 
     def __len__(self):
