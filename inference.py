@@ -1,5 +1,8 @@
 import cv2
 import numpy as np
+import torch
+import pickle
+import random
 
 class Inference():
   def __init__(self, model, device, scale_size=(224,224)):
