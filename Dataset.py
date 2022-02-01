@@ -15,8 +15,9 @@ class z_normalization(object):
         image = image.astype(np.float32)
         image_mean = np.mean(image)
         image_std = np.std(image)
-        image_norm = (image-image_mean)/image_std
+        image_norm = (image - image_mean) / image_std
         return {'image': image_norm, 'label': label}
+
 
 class ToTensor(object):
     def __call__(self, sample):
@@ -28,12 +29,14 @@ class ToTensor(object):
         label = torch.from_numpy(label).long()
         return {'image': image, 'label': label}
 
+
 class Normalization(object):
-    def __call__(self,sample):
+    def __call__(self, sample):
         image = sample['image']
         label = sample['label']
         image = image.astype(np.float32) / 255.
-        return {'image':image, 'label':label}
+        return {'image': image, 'label': label}
+
 
 class Random_Crop(object):
     def __init__(self, crop_size, img_size):
@@ -46,7 +49,7 @@ class Random_Crop(object):
 
         h = self.crop_size[0]
         w = self.crop_size[1]
-        
+
         H = random.randint(0, self.img_size[0] - h)
         W = random.randint(0, self.img_size[1] - w)
 
@@ -54,6 +57,30 @@ class Random_Crop(object):
         label = label[H: H + h, W: W + w]
 
         return {'image': image, 'label': label}
+
+
+class Random_Flip(object):
+    def __call__(self, sample):
+        image = sample['image']
+        label = sample['label']
+        if random.randint(0, 1) > 0.5:
+            image = cv2.flip(image, 0)
+            label = cv2.flip(label, 0)
+        elif random.randint(0, 1) > 0.5:
+            image = cv2.flip(image, 1)
+            label = cv2.flip(label, 1)
+        return {'image': image, 'label': label}
+
+
+class Random_Rotate(object):
+    def __call__(self, sample):
+        image = sample['image']
+        label = sample['label']
+        if random.randint(0, 1) > 0.5:
+            image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
+            label = cv2.rotate(label, cv2.cv2.ROTATE_90_CLOCKWISE)
+        return {'image': image, 'label': label}
+
 
 class Scaling(object):
     def __init__(self, scale_size):
@@ -64,20 +91,24 @@ class Scaling(object):
         label = sample['label']
         image = cv2.resize(image, self.scale_size)
         label = cv2.resize(label, self.scale_size)
-        return {'image':image, 'label':label}
+        return {'image': image, 'label': label}
+
 
 def transform(sample, crop_size, scale_size):
     trans = transforms.Compose([
         Scaling(scale_size),
         Random_Crop(crop_size, scale_size),
-        # Scaling(scale_size),
+        Random_Flip(),
+        Random_Rotate(),
         Normalization(),
         ToTensor()
     ])
     return trans(sample)
 
+
 class dataset(Dataset):
-    def __init__(self, list_file_images, scale_size=(1000,1000), crop_size=(900,900), root_img='', root_label='', mode='train'):
+    def __init__(self, list_file_images, scale_size=(1000, 1000), crop_size=(900, 900), root_img='', root_label='',
+                 mode='train'):
         self.lines = []
         self.lines_label = []
         self.paths_images = []
@@ -100,11 +131,11 @@ class dataset(Dataset):
         path_image = path_image.rstrip("\n")
         path_label = self.paths_labels[item]
         path_label = path_label.rstrip("\n")
-        
+
         image = cv2.imread(path_image)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        label = cv2.imread(path_label,0)
-        sample = {'image':image,'label':label}
+        label = cv2.imread(path_label, 0)
+        sample = {'image': image, 'label': label}
         sample = transform(sample, self.crop_size, self.scale_size)
         return sample['image'], sample['label']
 
