@@ -1,5 +1,5 @@
 import cv2
-
+import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import ImageGrid
 from os.path import isfile, join
 from random import shuffle
